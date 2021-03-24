@@ -100,17 +100,18 @@ int main(int argc, char* argv[]) {
 					{
 						int current = 127*target[o];
 						int fDelta = nearestFibonacci(current-prev);
-						if (fDelta < FLUT[0])
+
+						if (fDelta < -34)
 						{
-							fDelta = FLUT[0];
+							fDelta = -34;
 						}
-						else if (fDelta > FLUT[-1])
+						else if (fDelta > 21)
 						{
-							fDelta = FLUT[-1];
+							fDelta = 21;
 						}
 						
 						encoded |= std::distance(FLUT.begin(), find(FLUT.begin(), FLUT.end(), fDelta));
-						prev +=  (current-prev) - fDelta;
+						prev += fDelta;
 						
 						if (o & 1)
 						{
