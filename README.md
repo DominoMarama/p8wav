@@ -11,5 +11,7 @@ Resamples input wavs to correct rate and exports as a P8SCII string in a lua fil
 
 TODO:
 Combine multiple wavs into single sample table
+
 Implement fibonacci delta encoding
+
 Add playback functions to lua
