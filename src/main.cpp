@@ -11,17 +11,21 @@ using namespace speexport;
 
 const int picorate=5512;
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 // Return the Fibonacci number
 // with the smallest difference to num
 
 int nearestFibonacci(int num)
 {
-	if (num == 0) return 0;  
+	if (num == 0) return 0;
 	int first = 0;
-	int second = 1;
+	int second = sgn(num);
 	int third = first + second;
 
-	while (third <= num) {
+	while (abs(third) <= abs(num)) {
 		first = second;
 		second = third;
 		third = first + second;
@@ -29,6 +33,8 @@ int nearestFibonacci(int num)
 
 	return (abs(third - num) >= abs(second - num)) ? second : third;
 }
+
+std::vector<int> FLUT = {-34,-21,-13,-8,-5,-3,-2,-1,0,1,2,3,5,8,13,21};
 
 // Pico 8 ascii lookup
 
@@ -72,12 +78,53 @@ int main(int argc, char* argv[]) {
 			s.replace(s.end()-3,s.end(),"lua");
 			std::ofstream output;
 			output.open(s);
-			output << s.substr(0,s.length()-4);
-			output << "={c=\"" << compressionCode[ccode] << "\",n=" << targSamples << ",s=\"";
-			
-			for (int o=0; o < targSamples; o++)
+			output << s.substr(0,s.length()-4) << "={c=\"" << compressionCode[ccode] << "\",";
+			output << "n=" << targSamples << ",s=\"";
+
+			switch(ccode)
 			{
-				output << P8SCII[127*target[o]+127];
+				case 0: // uncompressed 8 bit
+				{
+					for (int o=0; o < targSamples; o++)
+					{
+						output << P8SCII[127*target[o]+127];
+					}
+					break;
+				}
+				case 1: // Fibonacci delta 4 bit
+				{
+					int prev = 127*target[0];
+					output << P8SCII[prev];
+					unsigned char encoded = 0;
+					for (int o=1; o < targSamples; o++)
+					{
+						int current = 127*target[o];
+						int fDelta = nearestFibonacci(current-prev);
+						if (fDelta < FLUT[0])
+						{
+							fDelta = FLUT[0];
+						}
+						else if (fDelta > FLUT[-1])
+						{
+							fDelta = FLUT[-1];
+						}
+						
+						encoded |= std::distance(FLUT.begin(), find(FLUT.begin(), FLUT.end(), fDelta));
+						prev +=  (current-prev) - fDelta;
+						
+						if (o & 1)
+						{
+							encoded <<= 4;
+						}
+						else
+						{
+							output << P8SCII[encoded];
+							encoded = 0;
+						}
+					}
+					if (targSamples & 1) output << P8SCII[encoded];
+					break;
+				}
 			}
 			
 			output << "\"}" << std::endl;
