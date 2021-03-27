@@ -35,6 +35,8 @@ int nearestFibonacci(int num)
 	return (abs(third - num) >= abs(second - num)) ? second : third;
 }
 
+// Fibonacci encoding lookup
+
 std::vector<int> FLUT = {-34,-21,-13,-8,-5,-3,-2,-1,0,1,2,3,5,8,13,21};
 
 // Pico 8 ascii lookup
@@ -46,7 +48,7 @@ std::vector<bool> usedCodes = { false, false };
 bool usedEncode = false;
 
 int main(int argc, char* argv[]) {
-    if (argc<2) {std::cout << "usage: " << argv[0] << " [OPTION] [FILE]...\n\t-u 8 bit uncompressed\n\t-f 4 bit Fibonacci Delta\n"; return 0;}
+    if (argc<2) {std::cout << "usage: " << argv[0] << " [OPTION] [FILE]...\n\t-u 8 bit uncompressed\n\t-f 4 bit Fibonacci Delta\n\t-c copy to clipboard\n"; return 0;}
     int speex_err=0;
     bool copyClip = false;
     SpeexResampler resampler=SpeexResampler();
@@ -58,7 +60,8 @@ int main(int argc, char* argv[]) {
 	for (int i = 1; i < argc; i++) {
 	    std::string s(argv[i]);
 	    if (s=="-u") {ccode=0; std::cout << "Mode: Uncompressed 8 bit" << std::endl; continue;}
-   	    if (s=="-f") {ccode=1;  std::cout << "Mode: Fibonacci Delta 4 bit" << std::endl; continue;}
+   	    //if (s=="-f") {ccode=1;  std::cout << "Mode: Fibonacci Delta 4 bit" << std::endl; continue;}
+   	    if (s=="-f") {std::cout << "TODO: Fibonacci Delta 4 bit" << std::endl; continue;}
    	    if (s=="-c") {copyClip=true; continue;}
 		AudioFile<float> a;
 		std::cout << "Processing: " << s << std::endl;
@@ -91,14 +94,6 @@ int main(int argc, char* argv[]) {
 			if (ccode > 0) usedEncode = true;
 			switch(ccode)
 			{
-				case 0: // uncompressed 8 bit
-				{
-					for (int o=0; o < targSamples; o++)
-					{
-						output << P8SCII[127*target[o]+127];
-					}
-					break;
-				}
 				case 1: // Fibonacci delta 4 bit
 				{
 					int prev = 127*target[0];
@@ -134,6 +129,14 @@ int main(int argc, char* argv[]) {
 					if (targSamples & 1) output << P8SCII[encoded];
 					break;
 				}
+				default: // uncompressed 8 bit
+				{
+					for (int o=0; o < targSamples; o++)
+					{
+						output << P8SCII[127*target[o]+127];
+					}
+				}
+
 			}
 			
 			output << "\"}\n";
@@ -168,7 +171,7 @@ function decode_sample(sample)
 	 for i=2,sample.n do
 	  local b=ord(sample.s,1+lshr(i,1))
 	  if band(i,1) then
- 	  b=band(b,0x0f)
+	   b=band(b,0x0f)
 	  else
 	   b=band(lshr(b,4),0x0f)
 	  end
@@ -212,7 +215,12 @@ end
 
 	if (copyClip)
 	{
-		clip::set_text("TODO: clip support");
+		std::ifstream ifs("pcm_audio.lua");
+		std::string content( (std::istreambuf_iterator<char>(ifs) ),
+                       (std::istreambuf_iterator<char>()    ) );
+		clip::set_text(content);
+		ifs.close();
+		std::cout << "Copied to clipboard" << std::endl;
 	}
 	return 0;
 }
