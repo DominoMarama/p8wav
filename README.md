@@ -1,17 +1,22 @@
 # p8wav
-Converts wav files to Pico 8 strings
-
-usage: p8wav [FILE]...
-
 Converts wav files to lua for use on pico 8
 
-Currently working:
+usage: p8wav [OPTIONS] [FILE]...
+	-u 8 bit uncompressed
+	-f 4 bit Fibonacci Delta
+	-c copy to clipboard
 
-Resamples input wavs to correct rate and exports as a P8SCII string in a lua file
+## Build
 
-TODO:
-Combine multiple wavs into single sample table
+	git clone --recurse-submodules --depth=1 git://github.com/DominoMarama/p8wav.git
+	cd p8wav
+	mkdir build
+	cd build
+	cmake ..
+	make
+	make install
+
+## TO DO:
 
 Implement fibonacci delta encoding
 
-Add playback functions to lua
