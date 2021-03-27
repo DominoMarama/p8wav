@@ -53,3 +53,4 @@ Once you have pasted the pcm_audio into your cartridge, you can use the samples 
 		end
 	end
 
+Note: init_pcm() is only required if you are using compression. If you only use uncompressed samples it will be omitted from the lua script to save tokens.
