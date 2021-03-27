@@ -11,3 +11,5 @@ target_include_directories(p8wav PUBLIC
 	"${PROJECT_SOURCE_DIR}/include"
 	"clip"
 )
+
+install(TARGETS p8wav DESTINATION bin)
