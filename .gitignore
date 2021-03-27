@@ -1,4 +1,2 @@
-p8wav
-obj/*.o
-*.wav
-*.lua
+build
+
