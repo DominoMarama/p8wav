@@ -60,8 +60,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 1; i < argc; i++) {
 	    std::string s(argv[i]);
 	    if (s=="-u") {ccode=0; std::cout << "Mode: Uncompressed 8 bit" << std::endl; continue;}
-   	    //if (s=="-f") {ccode=1;  std::cout << "Mode: Fibonacci Delta 4 bit" << std::endl; continue;}
-   	    if (s=="-f") {std::cout << "TODO: Fibonacci Delta 4 bit" << std::endl; continue;}
+   	    if (s=="-f") {ccode=1;  std::cout << "Mode: Fibonacci Delta 4 bit" << std::endl; continue;}
    	    if (s=="-c") {copyClip=true; continue;}
 		AudioFile<float> a;
 		std::cout << "Processing: " << s << std::endl;
@@ -166,15 +165,14 @@ function decode_sample(sample)
 	local v=0
 )";
 		if (usedCodes[1]) output << R"(	if(sample.c=="fd4") then
-	 s=sub(sample.s,1)
+	 s=chr(ord(sample.s,1))
 	 v=ord(sample.s,1)
 	 for i=2,sample.n do
-	  local b=ord(sample.s,1+lshr(i,1))
-	  if band(i,1) then
-	   b=band(b,0x0f)
-	  else
-	   b=band(lshr(b,4),0x0f)
+	  local b=ord(sample.s,1+i\2)
+	  if (band(i,1)==0) then
+	   b=b>>>4
 	  end
+	  b=band(b,0x0f)
 	  v+=flut[b]
 	  s=s..chr(v)
 	 end
