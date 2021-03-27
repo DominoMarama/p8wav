@@ -54,3 +54,7 @@ Once you have pasted the pcm_audio into your cartridge, you can use the samples 
 	end
 
 Note: init_pcm() is only required if you are using compression. If you only use uncompressed samples it will be omitted from the lua script to save tokens.
+
+## License
+
+Due to the use of a GPL3 library, this repository is licensed under GPL3. However any generated lua code from the compiled program is licensed CC0. Feel free to use the output in your own Pico 8 cartridges under whatever license your own code or audio uses. A mention would be nice, but is not required.
